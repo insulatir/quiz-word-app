@@ -1,0 +1,32 @@
+services:
+  word-api:
+    build: ./word-api
+    volumes:
+      - ./shared:/app/shared
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/worddb
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: pass
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./shared:/app/shared
+    ports:
+      - "5173:5173"
+    depends_on:
+      - word-api
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: worddb
+    ports:
+      - "5432:5432"
